@@ -67,13 +67,12 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
     user_options["pre_compile"].call(installer_context)
   end
 
-  sandbox_root = Pathname(installer_context.sandbox_root)
-  sandbox = Pod::Sandbox.new(sandbox_root)
+  sandbox = installer_context.sandbox
 
   enable_debug_information(sandbox.project_path, configuration) if enable_dsym
 
-  build_dir = sandbox_root.parent + 'build'
-  destination = sandbox_root.parent + 'Rome'
+  build_dir = sandbox.root.parent + 'build'
+  destination = sandbox.root.parent + 'Rome'
 
   Pod::UI.puts 'Building frameworks'
 
@@ -121,7 +120,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
     FileUtils.cp_r file, destination, :remove_destination => true
   end
 
-  copy_dsym_files(sandbox_root.parent + 'dSYM', configuration) if enable_dsym
+  copy_dsym_files(sandbox.root.parent + 'dSYM', configuration) if enable_dsym
 
   build_dir.rmtree if build_dir.directory?
 
